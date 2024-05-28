@@ -30,6 +30,11 @@ namespace BookProject.Data.Repositories
             return _context.Users.SingleOrDefault(u => u.UserId == id);
         }
 
+        public Role GetRoleById(int id)
+        {
+            return _context.Roles.SingleOrDefault(u => u.RoleId == id);
+        }
+
         public void AddUser(User user)
         {
             _context.Users.Add(user);
@@ -49,7 +54,7 @@ namespace BookProject.Data.Repositories
 
         public List<UserRoleDto> GetUsersWithRoles()
         {
-            var usersWithRoles = from user in _context.Users
+            var usersWithRoles = from user in _context.Users  
                                  join role in _context.Roles
                                  on user.RoleId equals role.RoleId
                                  select new UserRoleDto

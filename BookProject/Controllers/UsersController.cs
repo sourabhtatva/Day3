@@ -40,8 +40,22 @@ namespace BookProject.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddUser(User user)
+        public IActionResult AddUser([FromBody] User user)
         {
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            // Ensure the role exists before adding the user
+            var role = _userRepository.GetRoleById(user.RoleId);
+            if (role == null)
+            {
+                return BadRequest("Invalid role ID.");
+            }
+
+            user.Role = role;
+
             _userRepository.AddUser(user);
             return CreatedAtAction(nameof(GetUserById), new { id = user.UserId }, user);
         }
@@ -56,6 +70,13 @@ namespace BookProject.Controllers
         public ActionResult<List<IGrouping<string, User>>> GetUsersGroupedByRole()
         {
             return _userRepository.GetUsersGroupedByRole();
+        }
+
+        [HttpGet("users-with-roles")]
+        public ActionResult<List<UserRoleDto>> GetUsersWithRoles()
+        {
+            var usersWithRoles = _userRepository.GetUsersWithRoles();
+            return Ok(usersWithRoles);
         }
 
     }
